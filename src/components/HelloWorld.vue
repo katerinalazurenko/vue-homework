@@ -1,23 +1,43 @@
 <template>
   <div class="hello">
-    {{ obj }}
-    <h1>{{ msg }} - {{ msg.length }}</h1>
-    <hr />
-    <input v-model="textValue" @focus="onFocus" />
-    <input v-model.trim="textValue2" type="text" />
-    <button v-on:click="result = 1 + 9">Click</button>
-    <!-- <button @click="obj.text='some text'">Change</button> -->
-    <hr />
-    <input v-model.number.lazy="operand1"/>
-    <input v-model.number="operand2"/>
+    <br/>
+    <input v-model.number.lazy="operand1" />
+    <input v-model.number="operand2" />
     = {{ result }}
-    <br>
-    <button @click="sum">+</button>
-    <button @click="result = operand1 - operand2">-</button>
-    <button @click="sub">/</button>
-    <button @click="multiply">*</button>
-    <button @click="pow">pow</button>
-    <button @click="subInt" :disabled='operand2===0'>subInt</button>
+    <br/>
+    = {{ resultFib }}
+    <br />
+    <div class="error" v-if="error">
+      {{ error }}
+    </div>
+    <div class="error" v-show="error">
+      {{ error }}
+    </div>
+    <div class="messages">
+      <template v-if="result < 0">Получилось отрицательное число</template>
+      <template v-else-if="result < 100">Результат в первой сотне</template>
+      <template v-else>Получилось слишком большое число</template>
+    </div>
+    <div class="keyboard">
+      <button
+        :title="operand"
+        v-for="operand in operands"
+        @click="calculate(operand)"
+        :key="operand"
+      >
+        {{ operand }}
+      </button>
+    </div>
+    <hr />
+    <br />
+    <div class="item" v-for="(item, idx) in myColletion" :key="idx">
+      {{ idx }}-{{ item }}
+    </div>
+    <div class="logs">
+      <div class="log" v-for="(item, idx) in logs" :key="idx">
+        {{ item }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,42 +51,79 @@ export default {
     text: {
       type: String,
     },
-    obj: Object
   },
   data() {
     return {
       result: 0,
+      resultFib: 0, 
       operand1: 0,
       operand2: 0,
-      textValue: "",
-      textValue2: "",
+      error: "",
+      myColletion: [1, 2, 4, 5, 6, 7, 8, 9],
+      operands: ["+", "-", "/", "*"],
+      logs: {}
     };
   },
-  methods: {
-    onBlur() {
-      console.log(this.textValue);
+  computed: {
+    fibb1(){
+      return this.fib(this.operand1)
     },
-    onFocus() {
-      console.log("focus");
-    },
-    sum(){
-      this.result = this.operand1 + this.operand2
-    },
-    sub(){
-      const {operand1, operand2} = this
-      this.result = operand1 / operand2
-    },
-    multiply(){
-      this.result = this.operand1 * this.operand2
-    },
-    pow(){
-      this.result = Math.pow(this.operand1, this.operand2)
-    },
-    subInt(){
-      if (Number.isInteger(this.operand1) && Number.isInteger(this.operand2)){
-        this.result = this.operand1 / this.operand2
-      } 
-    },
+    fibb2(){
+      return this.fib(this.operand2)
+    }
   },
+  watch:{
+    operand1: {
+    handler: function(newValue, oldValue) {
+      console.log(newValue, oldValue)
+    },
+    immediate: true
+    }
+  },
+  methods: {
+    calculate(operation = "+") {
+      this.error = "";
+      switch (operation) {
+        case "+":
+          this.add();
+          break;
+        case "-":
+          this.substract();
+          break;
+        case "*":
+          this.multiply();
+          break;
+        case "/":
+          this.divide();
+          break;
+      }
+
+      const key = Date.now()
+      const value = `${this.operand1} ${operation} ${this.operand2} = ${this.result}`
+
+      this.$set(this.logs, key, value)
+    },
+    add() {
+      this.result = this.operand1 + this.operand2;
+      // this.resultFib = this.fibb1 + this.fibb2
+    },
+    substract() {
+      this.result = this.operand1 - this.operand2;
+    },
+    divide() {
+      const { operand1, operand2 } = this;
+      if (operand2 === 0) {
+        this.error = "Делить на 0 нельзя";
+        return;
+      }
+      this.result = operand1 / operand2;
+    },
+    multiply() {
+      this.result = this.operand1 * this.operand2;
+    },
+    fib(n){
+      return n <= 1 ? n : this.fib(n-1) + this.fib(n-2)
+    }
+  }
 };
 </script>
