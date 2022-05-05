@@ -1,32 +1,65 @@
 <template>
   <div class="home">
-    {{ text }}
-    <br/>
-    {{ arr }}
-    <MyName msg="Hello" :text="text" :obj="obj"/>
+    <header>
+      <div class="title">My personal costs</div>
+      <div>Total Price = {{getFullPaymentValue}} </div>
+    </header>
+    <main>
+       <AddPaymentForm />
+      <PaymentsDisplay :items="currentElements"/>
+      <MyPagination :cur="cur" :length="6" :n="n" @changePage="changePage"/>
+    </main>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import PaymentsDisplay from "@/components/PaymentsDisplay.vue";
+import AddPaymentForm from "@/components/AddPaymentForm.vue";
+import { mapMutations, mapGetters } from "vuex";
+import MyPagination from "@/components/MyPagination.vue";
 
 export default {
-  name: 'HomeView',
+  name: "HomeView",
   components: {
-    MyName: HelloWorld
-  },
+    PaymentsDisplay,
+    AddPaymentForm,
+    MyPagination
+},
   data() {
     return {
-      obj: {
-        text: 'asdas'
-      },
-      text: "Some text",
-      arr: [1,2,3,4,5]
+      cur: 1,
+      n: 3,
+    };
+  },
+  computed: {
+    ...mapGetters(['getFullPaymentValue', 'getPaymentsList']),
+    currentElements(){
+      return this.getPaymentsList.slice(this.n * (this.cur - 1), this.n * (this.cur -1) + this.n)
     }
   },
-}
+  methods: {
+    ...mapMutations({
+      MyMutation: 'setPaymentsListData'
+    }),
+    addPaymentData(data) {
+      this.paymentsList.push(data)
+    },
+    changePage(p){
+      this.cur = p
+      this.$store.dispatch('fetchData', p)
+    }
+  },
+  created() {
+    this.$store.dispatch('fetchData', this.cur)
+    // this.$store.commit('setPaymentsListData', this.fetchData())
+  },
+  mounted() {
+  },
+};
 </script>
 
-<style>
+<style lang="scss" scoped>
+.title {
+  font-size: 20px;
+}
 </style>
