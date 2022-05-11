@@ -1,12 +1,30 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <!-- <div class="clickItem" @click="goToAboutPage">
+        <span>
+          GoToAbout
+        </span>
+      </div> -->
+      <router-link :to="{name: 'Dashboard', params: {page: '1'} }">Dashboard</router-link> |
+      <router-link to="/about">About</router-link> |
+      <router-link to="/notfound">notfound</router-link>
     </nav>
     <router-view/>
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    goToAboutPage() {
+      this.$router.push({
+        name: "Dashboard",
+      })
+    }
+  },
+}
+</script>
 
 <style lang="scss">
 #app {
