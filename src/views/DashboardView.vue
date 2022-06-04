@@ -16,8 +16,8 @@
 
         <PaymentsDisplayVue :items="paymentsList" :dialog="dialog"/>
       </v-col>
-      <v-col>
-        DIAGRAMM
+      <v-col class="mt-10">
+        <ChartPayments />
       </v-col>
 
     </v-row>
@@ -28,11 +28,13 @@
 import PaymentsDisplayVue from '@/components/PaymentsDisplay.vue'
 import AddPaymentForm from '@/components/AddPaymentForm.vue'
 import { mapMutations, mapGetters } from "vuex";
+import ChartPayments from '@/components/ChartPayments.vue';
 export default {
   name: "DashboardView",
   components: {
     PaymentsDisplayVue,
     AddPaymentForm,
+    ChartPayments
 },
   data() {
     return {

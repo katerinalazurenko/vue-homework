@@ -27,8 +27,13 @@ const mutations = {
 
 const getters = {
   getPaymentsList: state => state.paymentList,
-  getFullPaymentValue: state => {
-    return state.paymentList.reduce((res, cur) => res + cur.value, 0)
+  getPaymentValues: state => {
+    const res = []
+    state.categoryList.forEach(category => {
+      const values = state.paymentList.filter(item => item.category == category).reduce((res, cur) => res + cur.value, 0)
+      res.push(values)
+    })
+    return res
   },
   getCategoryList: state=>state.categoryList
 }
@@ -44,10 +49,11 @@ export default new Vuex.Store({
       return new Promise((resolve)=>{
         setTimeout(()=>{
           const items = []
+          const list = ['Food', 'Transport', 'Education', 'Entertainment', 'Sport']
           for(let i=1; i<=50; i++) {
             items.push({
               date: "23.12.2022",
-              category: "Sport",
+              category: list[Math.floor(Math.random()*list.length)],
               value: i*100,
               id: Math.floor(Math.random()* Math.floor(Math.random() * Date.now()) +i)
             })
